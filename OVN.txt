@@ -1,0 +1,28 @@
+ 
+
+## Bài dịch :
+-  https://github.com/ovn-org/ovn
+-  http://man7.org/linux/man-pages/man7/ovn-architecture.7.html
+
+## OVN 
+
+
+
+## OVN là gì
+- OVN ( Open Virtual Network ) là một chuỗi các chương trình thực hiện cấu hình mạng ảo thành Openflow và cài đặt chúng trên Openvswitch. Nó được phát hành dưới giấy phép mã nguồn mở Apache2
+- OVN được hiểu là một bản sao cap cấp của Openvswitch, tập trung vào logical router và logical switch hơn là việc flow packet. OVS được xây dựng nhằm mục đích để được sử dụng bởi các cloud management software ( CMS ). Một số chức năng của OVN cung cấp 
+    - Distributed virtual routers
+    - Distributed logical switches
+    - Access Control Lists
+    - DHCP
+    - DNS server
+
+- Giống mới Open vSwitch, OVN được viết bằng ngôn ngữ C, và được chạy trên userspace nên không yêu cầu load thêm module nào của kernel.
+
+
+## Kiến trúc của OVN. Từ khóa search tài liệu : ovn-architecture manpage.
+
+![](https://i.imgur.com/HRtYF0l.png)
+
+- Trước tiên OVN được xây dựng từ các thành phần chính sau đây
+    - 
