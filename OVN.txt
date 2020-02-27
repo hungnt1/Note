@@ -4,7 +4,7 @@
 -  https://github.com/ovn-org/ovn
 -  http://man7.org/linux/man-pages/man7/ovn-architecture.7.html
 
-## OVN 
+## OVN trong Openstack
 
 
 
@@ -22,7 +22,22 @@
 
 ## Kiến trúc của OVN. Từ khóa search tài liệu : ovn-architecture manpage.
 
-![](https://i.imgur.com/HRtYF0l.png)
 
 - Trước tiên OVN được xây dựng từ các thành phần chính sau đây
-    - 
+    - Một hệ thống quản lý cloud Cloud Management System (CMS), khác client của OVN. Việc tích hợp OVN vào một CMS thường yêu cầu một plugin và thường liên quan đến software. OVN thường hướng tới Openstack như một CMS
+    - Một OVN Database, có thể là node vật lý hoặc node ảo hóa. Đây là node trung tâm
+    - Một hoặc nhiều hypervisor. Hypevisor được cài đặt Openvswitch và triển khai interface theo tài liệu. 
+    - Không hoặc là một cổng gateway. Cổng này làm nhiệm vụ xây dựng một tunel logic trên một physical network, nhằm mục đích forward packet giữa tunnel và cổng vật lý.
+
+- diagram dưới đây mô tả các thành phần của OVN và môi tả sự tương quan giữa các software. 
+![](https://i.imgur.com/HRtYF0l.png)
+
+    - The Cloud Management System, đứng trên cùng của biểu đồ 
+    - OVN/ CMS plugin là một thành phần của của CMS để làm cổng giao tiếp với OVN. Trên Openstack, đây là Neutron Plugin gồm các Ml2, Ml3 driver. Có thể clone repo của Openstack để tham khảo thêm. Chức năng chính của plugin này nhằm mục đích thực hiện khởi tạo các logic network theo format của CMS và lưu tròng database riêng để lưu trữ các cấu hình và các cấu hình này sẽ được hiểu bởi OVN bởi một trình biên dịch  
+![](https://i.imgur.com/E9QZKdb.png)
+    - OVN Northbound Database nhận được cấu hình logic network được gửi xuống từ OVN/CMS Plugin/, database schema sẽ được thiết kế để được phù hợp với các concept được sử dụng trong CMS, hỗ trợ trực tiếp các khái niệm logic switch, router, ACL. OVN Northbound Database sẽ có 2 client gồm : OVN/ CMS plugin và ovn-northd ở dưới 
+    - ovn-northd kết nối tới OVN Northbound Database ở trên nó và OVN Sounthbound Datatbase ở dưới. Nó sẽ thực hiện dịch các cấu hình mạng logic được OVN Northbound Database nắm giữ thành các datapath flow cho OVN Sounthbound Database ở dưới 
+    - OVN Southbound Database là trung tâm chính của OVN. Các client nó là ovn-northd trên nó và ovn-controller trên tất cả các node transport phía dưới nó. OVN Sounthbound database bao gồm 3 loại dữ liệu chính : physical network ( PN ) tables thực hiện xác định cách để tìm kiếm các hypervisor và các node khác. Logic network (LN) table thực hiện lưu trữ các logical datapath flow. và binding table thực hiện chứa dữ liệu thể hiện sự liên kết giữa logic và physical của datapath. Các hypervisor thực hiện phân  bổ PN và Binding trong khi đó ovn-northd thực hiện phân bổ LN 
+
+- Ngoài ra các thành phần dưới dây được replicate trên mỗi hypervisor 
+    - ovn-controller: là một agent của ovn được phân bổ trên các hypervisor và software gateway. Northbound thực hiện connection với Sounthbound Database để học các OVN configuration and trạng thái sau đó thực hiện phân bổ PN table và Binding table. Sounthbound, thực hiện 
